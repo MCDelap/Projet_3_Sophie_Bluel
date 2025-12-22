@@ -1,31 +1,34 @@
 //PROJETS
 const gallery = document.querySelector(".gallery");
 
-fetch("http://localhost:5678/api/works")
-.then(response => response.json())
-.then(works => {
-    works.forEach(work => {
+async function displayWorks() {
+  const response = await fetch("http://localhost:5678/api/works");
+  const works = await response.json();
 
-        const figure = document.createElement ("figure");
-        const img = document.createElement ("img");
-        const figcaption = document.createElement ("figcaption");
+    for (let i = 0; i < works.length; i++) {
+      const work = works[i];
+      const figure = document.createElement("figure");
+      const img = document.createElement("img");
+      const figcaption = document.createElement("figcaption");
         
-        img.src = work.imageUrl;
-        img.alt = work.title;
-        figcaption.textContent = work.title;
+      img.src = work.imageUrl;
+      img.alt = work.title;
+      figcaption.textContent = work.title;
         
-        figure.appendChild(img);
-        figure.appendChild(figcaption);
-        gallery.appendChild(figure);
+      figure.appendChild(img);
+      figure.appendChild(figcaption);
+      gallery.appendChild(figure);
+  }
+}
 
-        });
+displayWorks();
+        
 
-});
+
+
+
+
+
 
 
  
-
-
-
-
-
