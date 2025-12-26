@@ -108,6 +108,11 @@ li:hover {
 	color: #B1663C;
 }
 
+nav li a {
+	text-decoration: none;
+	color: inherit;
+}
+
 #introduction {
 	display: flex;
 	align-items: center;
@@ -181,22 +186,33 @@ li:hover {
 	width: 100%;
 }
 
-#contact {
+#contact,
+#connection {
 	width: 50%;
 	margin: auto;
 }
 
-#contact > * {
+#contact,
+#connection > * {
 	text-align: center;
 }
 
-#contact h2 {
+#contact h2,
+#connection h2 {
 	margin-bottom: 20px;
 }
 
 #contact form {
 	text-align: left;
-	margin-top:30px;
+	margin-top: 30px;
+	display: flex;
+	flex-direction: column;
+}
+
+#connection form {
+	text-align: left;
+	align-items: center;
+	margin-top: 30px;
 	display: flex;
 	flex-direction: column;
 }
@@ -208,8 +224,29 @@ li:hover {
 	box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.09);
 }
 
+#connection input {
+	width: 380px;
+	height: 50px;
+	font-size: 1.2em;
+	border: none;
+	box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.09);
+}
+
 #contact label {
 	margin: 2em 0 1em 0;
+}
+
+#connection label {
+    margin: 2em 0 1em 0;
+	width: 380px;
+    text-align: left;
+}
+
+#connection p {
+	text-decoration: underline;
+	font-weight: 500;
+	text-align: center;
+	cursor: pointer;
 }
 
 #contact textarea {
@@ -222,10 +259,14 @@ input[type="submit"] {
 	font-weight: 700;
 	color: white;
 	background-color: #1D6154;
-	margin : 2em auto ;
+	margin : 2em auto;
 	width: 180px;
 	text-align: center;
-	border-radius: 60px ;
+	border-radius: 60px;
+}
+
+#connection input[type="submit"] {
+    width: 180px;
 }
 
 footer nav ul {
