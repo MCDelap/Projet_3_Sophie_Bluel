@@ -113,6 +113,12 @@ nav li a {
 	color: inherit;
 }
 
+.nav-login li:hover {
+	font-weight: 600;
+	color: inherit;
+	cursor: pointer;
+}
+
 #introduction {
 	display: flex;
 	align-items: center;
