@@ -1,101 +1,108 @@
 const gallery = document.querySelector(".gallery");
+const token = localStorage.getItem("token");
 
-// 1. FONCTION POUR AFFICHER LES PROJETS
+// FONCTION POUR AFFICHER LES PROJETS
 function displayGallery(worksList) {
     gallery.innerHTML = ""; 
-
     for (let i = 0; i < worksList.length; i++) {
         const work = worksList[i]; 
-
         const figure = document.createElement("figure");
         const image = document.createElement("img");
         const figcaption = document.createElement("figcaption");
-
         image.src = work.imageUrl;
         image.alt = work.title;
-
         figcaption.textContent = work.title;
-
         figure.appendChild(image);
         figure.appendChild(figcaption);
-
         gallery.appendChild(figure);
     }
 }
 
-// 2. CHARGEMENT INITIAL DES PROJETS
+// CHARGEMENT INITIAL
 async function loadWorks() {
     const response = await fetch("http://localhost:5678/api/works");
     const works = await response.json();
     displayGallery(works);
 }
-
 loadWorks();
 
-// 3. GESTION DES FILTRES
-const portfolio = document.querySelector("#portfolio");
-const filtersContainer = document.createElement("ul");
-filtersContainer.classList.add("filters");
+if (token) {
+    // --- MODE CONNECTE ---
+    const banner = document.querySelector(".banner-edition");
+    if (banner) banner.style.display = "flex";
 
-function changeSelectedColor(selectedButton) {
-    const allButtons = document.querySelectorAll(".filter-btn");
-    allButtons.forEach(button => {
-        button.classList.remove("active");
-    });
-    selectedButton.classList.add("active");
-}
+    const loginLink = document.querySelector("#login-link");
+    if (loginLink) {
+        loginLink.textContent = "logout";
+        loginLink.addEventListener("click", (event) => {
+            event.preventDefault();
+            localStorage.removeItem("token");
+            window.location.href = "index.html";
+        });
+    }
+
+    const portfolioTitle = document.querySelector("#portfolio h2");
+    if (portfolioTitle) {
+        const editBtn = document.createElement("a");
+        editBtn.href = "#";
+        editBtn.classList.add("modify-link");
+        editBtn.innerHTML = '<i class="fa-regular fa-pen-to-square"></i> modifier';
+        portfolioTitle.appendChild(editBtn);
+    }
+    
+    } else {
+    // --- MODE VISITEUR (Filtres) ---
+    const portfolio = document.querySelector("#portfolio");
+    const filtersContainer = document.createElement("ul");
+    filtersContainer.classList.add("filters");
+
+    function changeSelectedColor(selectedButton) {
+        const allButtons = document.querySelectorAll(".filter-btn");
+        allButtons.forEach(button => button.classList.remove("active"));
+        selectedButton.classList.add("active");
+    }
 
 // --- CRÉATION DU BOUTON "TOUS" ---
-const liAll = document.createElement("li");
-const btnAll = document.createElement("button");
-btnAll.textContent = "Tous";
-btnAll.classList.add("filter-btn");
-btnAll.classList.add("active");
-
-btnAll.addEventListener("click", async () => {
-    changeSelectedColor(btnAll);
-    const response = await fetch("http://localhost:5678/api/works");
-    const works = await response.json();
-    displayGallery(works); 
-});
+    const liAll = document.createElement("li");
+    const btnAll = document.createElement("button");
+    btnAll.textContent = "Tous";
+    btnAll.classList.add("filter-btn", "active");
+    btnAll.addEventListener("click", () => {
+        changeSelectedColor(btnAll);
+        loadWorks();
+    });
+    liAll.appendChild(btnAll);
+    filtersContainer.appendChild(liAll);
 
 liAll.appendChild(btnAll);
 filtersContainer.appendChild(liAll);
 
-// 4. CRÉATION DES BOUTONS DE CATÉGORIES
-async function displayCategories() {
-    
-    const responseCategories = await fetch("http://localhost:5678/api/categories");
-    const categories = await responseCategories.json();
+// --- CRÉATION DES BOUTONS DE CATÉGORIES ---
+    async function displayCategories() {
+        const responseCategories = await fetch("http://localhost:5678/api/categories");
+        const categories = await responseCategories.json();
 
-    for (let i = 0; i < categories.length; i++) {
-        const category = categories[i];
-        const li = document.createElement("li");
-        const button = document.createElement("button");
-        button.classList.add("filter-btn");
-        button.textContent = category.name;
+        categories.forEach(category => {
+            const li = document.createElement("li");
+            const button = document.createElement("button");
+            button.classList.add("filter-btn");
+            button.textContent = category.name;
 
-        button.addEventListener("click", async () => {
-            changeSelectedColor(button);
-            const responseWorks = await fetch("http://localhost:5678/api/works");
-            const allWorks = await responseWorks.json();
-            
-            const filteredWorks = allWorks.filter(work => {
-                return work.categoryId === category.id;
+            button.addEventListener("click", async () => {
+                changeSelectedColor(button);
+                const responseWorks = await fetch("http://localhost:5678/api/works");
+                const allWorks = await responseWorks.json();
+                const filteredWorks = allWorks.filter(work => work.categoryId === category.id);
+                displayGallery(filteredWorks);
             });
-            
-            displayGallery(filteredWorks);
+
+            li.appendChild(button);
+            filtersContainer.appendChild(li);
         });
-
-        li.appendChild(button);
-        filtersContainer.appendChild(li);
+        portfolio.insertBefore(filtersContainer, gallery);
     }
-
-    portfolio.insertBefore(filtersContainer, gallery);
+    displayCategories();
 }
-
-displayCategories();
-
 
 
 
