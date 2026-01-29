@@ -60,6 +60,20 @@ if (token) {
     const modalContainer = document.querySelector("#modal-container");
     const modalWrapper = document.querySelector(".modal-wrapper");
 
+    // FONCTION DE SUPPRESSION
+    async function deleteWork(workId, figureElement) {
+        const response = await fetch(`http://localhost:5678/api/works/${workId}`, {
+            method: "DELETE",
+            headers: { "Authorization": `Bearer ${token}` }
+        });
+        if (response.ok) {
+            figureElement.remove();
+            loadWorks();
+        } else {
+            alert("Erreur lors de la suppression du projet.");
+        }
+    }
+
     // Fonction pour générer la vue galerie
     async function showGalleryView() {
         modalWrapper.innerHTML = ""; 
@@ -158,6 +172,15 @@ if (token) {
                     <img src="${work.imageUrl}" alt="${work.title}">
                     <span class="trash-icon"><i class="fa-solid fa-trash-can"></i></span>
                 `;
+
+                 // Ciblage de la poubelle pour activer la suppression
+                const trashBtn = figure.querySelector(".trash-icon");
+                trashBtn.addEventListener("click", (event) => {
+                    event.preventDefault();
+                    if (confirm("Voulez-vous vraiment supprimer ce projet ?")) {
+                        deleteWork(work.id, figure);
+                    }
+                });
 
                 modalGalleryContent.appendChild(figure);
             });
